@@ -86,27 +86,6 @@ function renderHead(string $titulo = 'InfoMatics Computación'): void {
             color: #f0f0f0;
             text-shadow: 0 1px 5px rgba(0,0,0,0.7);
         }
-        .btn-comprar-card {
-            background-color: #d32f2f;
-            color: #ffffff !important;
-            border: 1px solid #b71c1c;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-modificar-card {
-            background-color: #0277bd;
-            color: #ffffff !important;
-            border: 1px solid #01579b;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-eliminar-card {
-            background-color: #b71c1c;
-            color: #ffffff !important;
-            border: 1px solid #7f0000;
-            font-weight: bold;
-            cursor: pointer;
-        }
     </style>
 <?php
 }
@@ -136,6 +115,9 @@ function renderNavbar(): void {
                 <?php if ($admin): ?>
                     <button onclick="location.href='/productos/nuevo/';" style="background-color: #2e7d32; color: #ffffff !important; border: 1px solid #1b5e20; font-weight: bold; border-radius: 6px; padding: 7px 14px; cursor: pointer;">
                         ➕ Nuevo Producto
+                    </button>
+                    <button onclick="location.href='/usuarios/todos/';" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; border-radius: 6px; padding: 7px 14px; cursor: pointer;">
+                        👥 Clientes
                     </button>
                 <?php else: 
                     $resumen = obtenerResumenCarrito($user->id);
