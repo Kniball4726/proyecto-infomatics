@@ -1,155 +1,279 @@
-# InfoMatics Computación
+# InfoMatics Computación — Plataforma de E-Commerce y Gestión
 
-Aplicación web de catálogo y carrito de compras para una tienda de componentes y productos de computación. Está construida con PHP y SQLite y se ejecuta localmente con el servidor web integrado de PHP.
+Aplicación web modular de catálogo, carrito de compras y gestión administrativa para una tienda de informática y tecnología. Desarrollada con **PHP 8.x** y base de datos relacional **SQLite 3**, diseñada para ejecutarse localmente mediante el servidor web integrado de PHP.
 
-## Funcionalidades
+---
 
-- Catálogo público de productos con ficha de detalle.
-- Inicio y cierre de sesión.
-- Roles de cliente y administrador.
-- Carrito individual por cliente, con cantidades, subtotales y total.
-- Operaciones de administración de productos: alta, edición y eliminación.
-- Rutas JSON para consultar productos y usuarios.
-- Módulos de gestión de usuarios disponibles por separado.
+## Índice
 
-### Roles
+1. [Novedades y Características](#novedades-y-características)
+2. [Roles y Control de Acceso](#roles-y-control-de-acceso)
+3. [Usuarios de Prueba](#usuarios-de-prueba)
+4. [Requisitos del Sistema](#requisitos-del-sistema)
+5. [Cómo Iniciar y Detener el Servidor](#cómo-iniciar-y-detener-el-servidor)
+6. [Manual de Usuario (Clientes)](#manual-de-usuario-clientes)
+7. [Manual de Administración](#manual-de-administración)
+8. [Arquitectura y Guía para Desarrolladores](#arquitectura-y-guía-para-desarrolladores)
+9. [Mapa de Rutas y Endpoints](#mapa-de-rutas-y-endpoints)
+10. [Esquema de Base de Datos](#esquema-de-base-de-datos)
+11. [Informe de Cumplimiento de Consignas (PDF)](#informe-de-cumplimiento-de-consignas-pdf)
 
-- **Visitante:** puede recorrer el catálogo y ver el detalle de los productos.
-- **Cliente:** puede agregar productos al carrito, modificar cantidades y simular la finalización de la compra.
-- **Administrador:** puede crear, editar y eliminar productos. El rol se determina por el campo `_nivel` de la tabla `TUsuarios`: un valor mayor que `1` indica administrador; los valores `1` o menores indican cliente.
+---
 
-La pantalla de finalización del carrito es una demostración: no procesa pagos, no genera una orden persistida y no descuenta stock.
+## Novedades y Características
 
-## Requisitos
+- **Catálogo Dinámico Ordenado:** Productos mostrados con los más recientes primero (`ORDER BY _id DESC`).
+- **Carrito de Compras Exclusivo para Clientes:**
+  - Badge interactivo en la barra superior con contador de unidades y monto acumulado en tiempo real.
+  - Modificación granular de cantidades (`+` y `-`).
+  - Eliminación directa de ítems (`Quitar`) y vaciado de orden.
+- **Gestión Integral de Clientes (CRUD Admin):** El administrador puede listar clientes registrados, dar de alta nuevos usuarios, editar sus datos/roles/contraseñas y eliminarlos con confirmación.
+- **Gestión Integral de Productos (CRUD Admin):** Creación, modificación y eliminación de productos con vista previa de imagen y alertas estilizadas.
+- **Modo Oscuro / Claro Persistente (`Dark Mode`):**
+  - Alternador `🌙 Modo Oscuro` / `☀️ Modo Claro` accesible desde todas las páginas.
+  - Sincronización instantánea en `localStorage`.
+  - Script temprano anti-parpadeo blanco (FOUC).
+- **Tarjeta de Inicio de Sesión Moderna:** Rediseñada con estética oscura carbón, anillo de foco en color corporativo, integración de marca y validación de errores.
+- **Inicio Silencioso sin Consola:** Posibilidad de arrancar el servidor en segundo plano sin ventanas negras mediante VBScript nativo y detenerlo en un solo clic.
+- **Arquitectura Modular (`includes/`):** Separación estricta entre la capa de acceso a datos / lógica de negocio (`includes/`) y las vistas de presentación (`publica/`).
 
-- Windows con PHP CLI; el iniciador incluido espera encontrarlo en `C:\xampp\php\php.exe`.
-- Extensión PDO SQLite habilitada en PHP (`PDO_SQLITE`).
-- Navegador web.
-- Conexión a Internet para cargar la hoja de estilos externa usada por algunas páginas.
+---
 
-## Iniciar la aplicación
+## Roles y Control de Acceso
 
-### Con el iniciador de Windows
+El sistema segmenta estrictamente las capacidades según el campo `_nivel` en la tabla `TUsuarios`:
 
-1. Abre `iniciar.bat` desde el Explorador de archivos o una terminal.
-2. En el menú, elige `1) Iniciar servidor`.
-3. Abre `http://localhost:3000/` en el navegador.
-4. Para detener el servidor, cierra la ventana de terminal que ejecuta PHP.
+| Rol | Valor `_nivel` | Permisos y Capacidades |
+| :--- | :---: | :--- |
+| **Visitante** | *No autenticado* | Explora el catálogo general y consulta fichas técnicas de detalle. No tiene carrito ni acceso administrativo. |
+| **Cliente** | `_nivel == 1` | Compra en la tienda, agrega productos al carrito, ajusta unidades y simula el cierre de orden. No ve botones de gestión ni accede a paneles administrativos. |
+| **Administrador** | `_nivel > 1` *(ej. 10)* | Gestión total de la plataforma: alta, edición y baja de **productos** y de **clientes**. No utiliza carrito de compras. |
 
-El iniciador usa `servidor.php`, que arranca el servidor integrado de PHP con `publica/` como raíz web.
+---
 
-### Desde una terminal
+## Usuarios de Prueba
 
-Desde la carpeta raíz del proyecto:
+Para verificar y evaluar los distintos roles, la base de datos `infomatics.db` cuenta con las siguientes cuentas precargadas:
 
+| Rol | Nombre | Email | Contraseña | Nivel |
+| :--- | :--- | :--- | :--- | :---: |
+| **Administrador** | Carlos | `carlos.gorosito@gmail.com` | `123abc` | 10 |
+| **Administrador** | Admin | `admin@infomatics.com` | `admin123` | 10 |
+| **Cliente** | Tormenta | `tormenta@xmen.com` | `wolverine` | 1 |
+| **Cliente** | Juan | `juan.perez@gmail.com` | `123456` | 1 |
+| **Cliente** | Maria | `maria.lopez@gmail.com` | `maria2026` | 1 |
+
+> [!NOTE]
+> El inicio de sesión acepta indistintamente el **Email** o el **Nombre** del usuario.
+
+---
+
+## Requisitos del Sistema
+
+- **Sistema Operativo:** Windows 10 / 11 (o cualquier SO compatible con PHP CLI).
+- **PHP:** Versión 8.0 o superior (instalado típicamente en `C:\xampp\php\php.exe`).
+- **Extensiones PHP:** `pdo_sqlite` y `sqlite3` habilitadas.
+- **Navegador Web:** Chrome, Edge, Firefox, Brave o Safari.
+
+---
+
+## Cómo Iniciar y Detener el Servidor
+
+Se ofrecen tres alternativas según el flujo de trabajo deseado:
+
+### Método 1: Inicio 100% Silencioso (Recomendado)
+- **Iniciar:** Haz doble clic sobre [iniciar_servidor.vbs](iniciar_servidor.vbs).
+  - El servidor se inicia en segundo plano sin ninguna ventana de consola negra.
+  - Se abre automáticamente tu navegador web en `http://localhost:3000/`.
+- **Detener:** Haz doble clic sobre [detener_servidor.bat](detener_servidor.bat) para liberar el puerto 3000 y apagar el proceso.
+
+### Método 2: Panel Interactivo de Control
+1. Ejecuta [iniciar.bat](iniciar.bat) para abrir el panel de control en consola.
+2. Selecciona la opción `1) Iniciar servidor` (inicia en segundo plano sin abrir consolas adicionales).
+3. Selecciona la opción `2) Detener servidor` cuando desees apagarlo.
+4. También dispones de accesos rápidos para abrir VS Code (`3`), la carpeta del proyecto (`4`) o `php.ini` (`7`).
+
+### Método 3: Comando Manual desde Terminal
+Desde la raíz del proyecto en PowerShell o CMD:
 ```powershell
-C:\xampp\php\php.exe -S 127.0.0.1:3000 -t publica
+c:\xampp\php\php.exe -S 0.0.0.0:3000 -t publica/
 ```
+Luego ingresa a `http://localhost:3000/` en tu navegador. Para detenerlo, presiona `Ctrl + C`.
 
-Luego visita `http://localhost:3000/`. Si PHP está instalado en otra ubicación, sustituye la ruta al ejecutable. Confirma que PDO SQLite esté habilitado.
+---
 
-## Manual de usuario
+## Manual de Usuario (Clientes)
 
-### Explorar el catálogo
+### 1. Navegar por el Catálogo
+1. Ingresa a `http://localhost:3000/`.
+2. Observa la cuadrícula de productos, cada uno con su imagen, precio y categoría.
+3. Haz clic en **"Más info"** para ingresar a la ficha técnica del producto donde verás su descripción completa y stock disponible.
 
-1. Abre `http://localhost:3000/`.
-2. Revisa la lista de productos, que muestra el nombre y precio.
-3. Selecciona **Más info** para consultar descripción, categoría, precio y stock registrado.
+### 2. Iniciar Sesión como Cliente
+1. Haz clic en **"Iniciar sesión"** en el margen superior derecho.
+2. Ingresa tus credenciales (por ejemplo: `tormenta@xmen.com` y clave `wolverine`).
+3. El sistema te redireccionará al catálogo reconociéndote con una insignia: `👤 Tormenta (Cliente)` y habilitará el botón del carrito.
 
-### Crear una cuenta de cliente
+### 3. Gestionar el Carrito de Compras
+1. En cualquier tarjeta o ficha de producto, haz clic en **"🛒 Agregar al carrito"**.
+2. Observa cómo el botón del carrito en el encabezado actualiza automáticamente la cantidad de ítems y el importe acumulado: ej. `🛒 Carrito (2) - $ 79.998`.
+3. Haz clic en el botón del carrito para ver el desglose detallado:
+   - Presiona `[ + ]` para incrementar la cantidad de un producto.
+   - Presiona `[ - ]` para decrementar la cantidad (si llega a 0, se remueve automáticamente).
+   - Presiona `[ 🗑️ Quitar ]` para eliminar todas las unidades de ese producto.
+4. Haz clic en **"Finalizar Compra"** para simular el cierre del pedido.
 
-El formulario de registro está en `http://localhost:3000/usuarios/nuevo/`. Completa nombre, apellido, correo electrónico y contraseña. Las cuentas creadas desde ese formulario son clientes.
+### 4. Alternar Modo Oscuro / Modo Claro
+- Haz clic en el botón `🌙 Modo Oscuro` ubicado en el encabezado.
+- La interfaz adoptará instantáneamente el esquema de alto contraste oscuro (tarjetas carbón `#1e1e1e`, fondo `#121212` y textos claros).
+- Tu preferencia queda guardada en tu navegador para todas las sesiones.
 
-### Iniciar o cerrar sesión
+---
 
-1. Selecciona **Iniciar sesión**.
-2. Ingresa el correo electrónico o nombre de usuario y la contraseña.
-3. Para salir, selecciona **Cerrar sesión**.
+## Manual de Administración
 
-### Usar el carrito
+### 1. Iniciar Sesión como Administrador
+1. Accede a `/formulario-login.php`.
+2. Ingresa con una cuenta de nivel 10 (ej: `carlos.gorosito@gmail.com` y clave `123abc`).
+3. La barra de navegación mostrará la insignia `👤 Carlos (Admin)` y desplegará los accesos exclusivos: **"➕ Nuevo Producto"** y **"👥 Clientes"**.
 
-1. Inicia sesión como cliente.
-2. Selecciona **Agregar al carrito** desde una tarjeta o ficha de producto.
-3. Abre el carrito para revisar cantidades y total.
-4. Usa `+` o `-` para ajustar la cantidad; **Quitar** elimina ese producto del carrito.
-5. **Finalizar Compra** solo muestra una confirmación simulada; no realiza un pago.
+### 2. Administración de Productos
+- **Crear Producto:** Haz clic en **"➕ Nuevo Producto"** (`/productos/nuevo/`), completa el nombre, descripción, categoría, precio, stock y URL de la imagen, y guarda el formulario.
+- **Modificar Producto:** En el catálogo o en el detalle del producto, pulsa el botón azul **"✏️ Modifica"** (`/productos/editar/?id=X`), ajusta los valores deseados y pulsa **"Guardar Cambios"**.
+- **Eliminar Producto:** En la ficha del producto, pulsa el botón rojo **"🗑️ Eliminar"**. El sistema solicitará confirmación antes de eliminar el registro de la base de datos.
 
-### Administrar productos
+### 3. Administración de Clientes
+- **Listar Clientes:** Haz clic en **"👥 Clientes"** (`/usuarios/todos/`) para ver la tabla completa de usuarios registrados con su ID, nombre, email, fecha de registro y rol.
+- **Registrar Nuevo Cliente:** Haz clic en **"➕ Nuevo Cliente"** (`/usuarios/nuevo/`), define nombre, apellido, correo electrónico, clave y rol (`Cliente` o `Administrador`), y pulsa **"Crear Cliente"**.
+- **Editar Cliente:** En la tabla de usuarios, haz clic en **"Editar"** (`/usuarios/editar/?id=X`). Puedes modificar los datos de contacto, rol y asignar una nueva contraseña (o dejarla vacía para conservar la actual).
+- **Eliminar Cliente:** Haz clic en **"Borrar"** en la fila del cliente. Tras confirmar el diálogo, el usuario será dado de baja de la base de datos.
 
-Inicia sesión con una cuenta cuyo `_nivel` sea mayor que `1`. Desde el catálogo se habilitan las acciones de producto; el encabezado también ofrece **Nuevo Producto**. Al crear o editar, se pueden indicar nombre, descripción, categoría, precio, stock e imagen mediante URL.
+---
 
-## Guía para desarrolladores
+## Arquitectura y Guía para Desarrolladores
 
-### Estructura del proyecto
+El proyecto aplica el **principio de modularidad y separación de responsabilidades**, eliminando scripts monolíticos y centralizando la lógica en una capa de servicios reutilizable:
 
 ```text
-.
-├── iniciar.bat                 # Iniciador de Windows
-├── servidor.php                # Menú y arranque del servidor PHP local
-├── infomatics.db               # Base SQLite utilizada por la aplicación principal
-├── includes/
-│   ├── db.php                  # Conexión PDO SQLite
-│   ├── auth.php                # Sesión, autenticación y roles
-│   ├── layout.php              # Encabezado, barra de navegación y estilos
-│   ├── productos.php           # Consultas y operaciones de productos
-│   └── carrito.php             # Operaciones y resúmenes del carrito
-└── publica/
-    ├── index.php               # Entrada del sitio y catálogo
-    ├── formulario-login*.php   # Inicio de sesión
-    ├── formulario-logout.php   # Cierre de sesión
-    ├── productos/              # Catálogo, CRUD y API de productos
-    ├── carrito/                # Acciones y vista del carrito
-    ├── usuarios/               # Registro, gestión y API de usuarios
-    └── recursos/               # Logo e imagen de portada
+proyecto-infomatics/
+├── includes/                               # CAPA DE SERVICIOS Y LÓGICA DE NEGOCIO
+│   ├── db.php                              # Conexión Singleton PDO SQLite con excepciones activadas
+│   ├── auth.php                            # Gestión de sesión, autenticación y guards de rol
+│   ├── layout.php                          # Motor de componentes HTML, cabeceras, Navbar y Dark Mode
+│   ├── productos.php                       # Servicio CRUD de productos (ORDER BY _id DESC)
+│   ├── carrito.php                         # Servicio de gestión de carrito, agregación y JOIN SQL
+│   └── usuarios.php                        # Servicio CRUD completo de usuarios y clientes
+│
+├── publica/                                # RAÍZ WEB EXPUESTA (DOCUMENT ROOT)
+│   ├── index.php                           # Controlador principal del catálogo
+│   ├── formulario-login.php                # Vista de inicio de sesión con soporte Dark Mode
+│   ├── formulario-login-procesar.php       # Procesador de autenticación
+│   ├── formulario-logout.php               # Cierre de sesión y limpieza
+│   ├── productos/
+│   │   ├── todos/                          # Listado de productos (render de tarjetas)
+│   │   ├── ver/                            # Ficha técnica de detalle (2 columnas + acciones integradas)
+│   │   ├── nuevo/                          # Alta de producto (Admin)
+│   │   ├── editar/                         # Modificación de producto (Admin)
+│   │   ├── borrar/                         # Eliminación de producto (Admin)
+│   │   └── api/                            # Endpoint JSON público de productos
+│   ├── carrito/
+│   │   ├── todos/                          # Vista y tabla interactiva del carrito (Cliente)
+│   │   ├── agregar/                        # Endpoint de adición/incremento (+1)
+│   │   ├── quitar/                         # Endpoint de decremento (-1) o eliminación total
+│   │   └── finalizar/                      # Pantalla de confirmación de compra simulada
+│   ├── usuarios/
+│   │   ├── todos/                          # Listado administrativo de clientes
+│   │   ├── nuevo/                          # Formulario y procesador de alta de cliente
+│   │   ├── editar/                         # Formulario y procesador de edición de cliente
+│   │   ├── borrar/                         # Eliminación de cliente
+│   │   └── api/                            # Endpoint JSON de usuarios
+│   └── recursos/                           # Activos estáticos (logo.png, portada.png)
+│
+├── infomatics.db                           # Base de datos relacional SQLite 3 activa
+├── iniciar_servidor.vbs                    # Lanzador 100% silencioso para Windows (sin consola)
+├── detener_servidor.bat                    # Script para detener el servidor en un clic
+├── iniciar.bat                             # Lanzador interactivo por consola
+├── servidor.php                            # Menú CLI y orquestador del servidor PHP
+├── Informe_Cumplimiento_Consignas_InfoMatics.pdf  # Informe formal de consignas académicas
+└── README.md                               # Documentación integral del proyecto
 ```
 
-El servidor usa `publica/` como raíz web, así que las rutas que empiezan con `/` corresponden a archivos dentro de esa carpeta. La conexión principal, definida en `includes/db.php`, abre `infomatics.db` en la raíz del proyecto. `base.db` no es la base seleccionada por esa función.
+---
 
-### Componentes principales
+## Mapa de Rutas y Endpoints
 
-- `includes/db.php`: `getDB()` crea y reutiliza la conexión PDO, usa SQLite y activa excepciones para errores de base de datos.
-- `includes/auth.php`: consulta y mantiene la sesión, autentica y proporciona `requerirAuth()`, `requerirAdmin()` y `requerirCliente()`.
-- `includes/productos.php`: funciones para listar, consultar, crear, actualizar y eliminar productos.
-- `includes/carrito.php`: funciones de consulta del carrito, suma de unidades y eliminación de unidades o productos.
-- `includes/layout.php`: genera los metadatos comunes y la navegación según el estado de sesión y rol.
-- `publica/index.php`: página de entrada; incluye el listado de `publica/productos/todos/`.
+| Ruta | Método | Nivel Requerido | Propósito |
+| :--- | :---: | :---: | :--- |
+| `/` | `GET` | Público | Catálogo principal de productos |
+| `/productos/ver/?id=X` | `GET` | Público | Ficha de detalle de producto con acciones contextuales |
+| `/productos/nuevo/` | `GET / POST` | Administrador (`>1`) | Formulario y alta de nuevo producto |
+| `/productos/editar/?id=X` | `GET / POST` | Administrador (`>1`) | Edición de producto existente |
+| `/productos/borrar/procesar.php?id=X` | `GET / POST` | Administrador (`>1`) | Baja física de un producto |
+| `/productos/api/` | `GET` | Público | Retorno JSON de productos |
+| `/carrito/todos/` | `GET` | Cliente (`==1`) | Vista completa del carrito de compras |
+| `/carrito/agregar/?id=X` | `GET / POST` | Cliente (`==1`) | Suma una unidad del producto al carrito |
+| `/carrito/quitar/?id=X[&todo=1]` | `GET / POST` | Cliente (`==1`) | Resta 1 unidad (`todo=1` elimina el producto) |
+| `/carrito/finalizar/` | `GET` | Cliente (`==1`) | Pantalla de confirmación de pedido simulado |
+| `/usuarios/todos/` | `GET` | Administrador (`>1`) | Listado y administración de clientes |
+| `/usuarios/nuevo/` | `GET / POST` | Administrador (`>1`) | Registro y alta de cliente |
+| `/usuarios/editar/?id=X` | `GET / POST` | Administrador (`>1`) | Modificación de datos y clave de cliente |
+| `/usuarios/borrar/procesar.php?id=X` | `GET / POST` | Administrador (`>1`) | Baja de cuenta de cliente |
+| `/formulario-login.php` | `GET` | Público | Pantalla de autenticación |
+| `/formulario-login-procesar.php` | `POST` | Público | Verificación de credenciales |
+| `/formulario-logout.php` | `GET` | Autenticado | Cierre de sesión seguro |
 
-### Rutas principales
+---
 
-| Ruta | Uso |
-| --- | --- |
-| `/` | Catálogo principal |
-| `/productos/ver?id=ID` | Detalle de un producto |
-| `/productos/nuevo/` | Formulario para crear producto (administrador) |
-| `/productos/editar/?id=ID` | Formulario para editar producto (administrador) |
-| `/productos/borrar/procesar.php?id=ID` | Elimina un producto (administrador) |
-| `/productos/api/` | Respuesta JSON con productos |
-| `/usuarios/nuevo/` | Registro de cliente |
-| `/usuarios/api/` | Respuesta JSON del módulo de usuarios |
-| `/carrito/todos` | Carrito del cliente autenticado |
-| `/carrito/agregar/?id=ID` | Agrega una unidad al carrito |
-| `/carrito/quitar/?id=ID` | Resta una unidad; `&todo=1` elimina el producto del carrito |
-| `/formulario-login.php` | Formulario de inicio de sesión |
-| `/formulario-logout.php` | Cierre de sesión |
+## Esquema de Base de Datos
 
-### Base de datos
+La base relacional `infomatics.db` implementa las siguientes tablas e índices:
 
-La aplicación principal usa estas tablas en `infomatics.db`:
+### Tabla `TUsuarios`
+```sql
+CREATE TABLE TUsuarios (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    _nombre TEXT NOT NULL,
+    _apellido TEXT NOT NULL,
+    _email TEXT NOT NULL UNIQUE,
+    _clave TEXT NOT NULL,
+    _fechaRegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    _nivel INTEGER DEFAULT 1
+);
+```
 
-- **`TUsuarios`**: `_id`, `_nombre`, `_apellido`, `_email`, `_clave`, `_fechaRegistro`, `_nivel`.
-- **`TProductos`**: `_id`, `_nombre`, `_descripcion`, `_categoria`, `_precio`, `_stock`, `_imagen`, `_activo`.
-- **`TCarrito`**: `_id`, `_idUsuario`, `_idProducto`, `_cantidad`, `_fecha`; tiene una restricción única por usuario y producto.
+### Tabla `TProductos`
+```sql
+CREATE TABLE TProductos (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    _nombre TEXT NOT NULL,
+    _descripcion TEXT,
+    _categoria TEXT,
+    _precio REAL NOT NULL,
+    _stock INTEGER DEFAULT 0,
+    _imagen TEXT,
+    _activo INTEGER DEFAULT 1
+);
+```
 
-Las operaciones de la aplicación principal se apoyan en `includes/`. Para una nueva funcionalidad, agrega o reutiliza funciones de servicio allí y mantén las páginas/rutas bajo `publica/`. Usa consultas preparadas para valores SQL y escapa los datos al renderizar HTML.
+### Tabla `TCarrito`
+```sql
+CREATE TABLE TCarrito (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    _idUsuario INTEGER NOT NULL,
+    _idProducto INTEGER NOT NULL,
+    _cantidad INTEGER NOT NULL DEFAULT 1,
+    _fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (_idUsuario) REFERENCES TUsuarios(_id),
+    FOREIGN KEY (_idProducto) REFERENCES TProductos(_id),
+    UNIQUE(_idUsuario, _idProducto)
+);
+```
 
-### Consideraciones antes de desplegar
+---
 
-Este proyecto está preparado para desarrollo local, no para exponerse directamente a Internet. Antes de un despliegue real, se deben revisar, entre otros aspectos:
+## Informe de Cumplimiento de Consignas (PDF)
 
-- Las contraseñas se comparan directamente con `_clave`; implementar almacenamiento con `password_hash()` y validación con `password_verify()`.
-- El formulario de registro actual envía datos mediante GET; cambiarlo a POST.
-- Proteger y limitar las API. En particular, `/usuarios/api/` devuelve registros de usuario y no debe publicarse sin filtrar campos privados y aplicar autorización.
-- Añadir protección CSRF y controles de autorización consistentes en todas las rutas de escritura.
-- Implementar un flujo real de órdenes, pagos y actualización de stock si se necesita vender.
-- Usar HTTPS y un servidor de producción configurado para PHP en vez del servidor integrado de desarrollo.
+El proyecto incluye el documento compilado [Informe_Cumplimiento_Consignas_InfoMatics.pdf](Informe_Cumplimiento_Consignas_InfoMatics.pdf), que detalla punto por punto el cumplimiento de las consignas educativas (puntos 1 al 18), indicando los archivos, funciones, consultas SQL y justificaciones técnicas aplicadas.
 
+---
+*InfoMatics &copy; 2026 — Plataforma de Comercio y Gestión.*
