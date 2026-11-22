@@ -1,28 +1,28 @@
 <?php
 require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../../includes/layout.php';
 requerirAdmin();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Producto - InfoMatics</title>
-    <link rel="stylesheet" href="https://gorosito.red/dame/simple.php?color=red">
+    <?php renderHead('Nuevo Producto - InfoMatics'); ?>
     <style>[full]{ width: 100% }</style>
 </head>
 <body>
-    <header>
-        <h1>Insertar nuevo producto</h1>
-        <?php if (!empty($_SESSION["error"])): ?>
-            <p style="color: red;"><?= htmlspecialchars($_SESSION["error"]) ?></p>
-            <?php unset($_SESSION["error"]); ?>
-        <?php endif; ?>
-        <nav>
+    <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+        <h1 style="margin: 0;">Insertar nuevo producto</h1>
+        <nav style="display: flex; gap: 10px; align-items: center;">
+            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
             <button onclick="location.href='/'">← Volver al catálogo</button>
         </nav>
     </header>
     <main>
+        <?php if (!empty($_SESSION["error"])): ?>
+            <p style="color: red;"><?= htmlspecialchars($_SESSION["error"]) ?></p>
+            <?php unset($_SESSION["error"]); ?>
+        <?php endif; ?>
+
         <form action="/productos/nuevo/procesar.php" method="POST">
             <article>
                 <label for="id_nombre">Nombre del producto:</label><br>

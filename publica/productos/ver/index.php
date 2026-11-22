@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../includes/auth.php';
 require_once __DIR__ . '/../../../includes/productos.php';
+require_once __DIR__ . '/../../../includes/layout.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 $encontrado = obtenerProductoPorId($id);
@@ -11,11 +12,7 @@ $autenticado = estaAutenticado();
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
-    <title><?= $encontrado ? htmlspecialchars($encontrado->_nombre) . ' - InfoMatics' : 'Producto no encontrado' ?></title>
-    <link rel="icon" href="/recursos/logo.png" type="image/png">
-    <link rel="stylesheet" href="https://gorosito.red/dame/simple.php?color=red" />
+    <?php renderHead($encontrado ? htmlspecialchars($encontrado->_nombre) . ' - InfoMatics' : 'Producto no encontrado'); ?>
     <style>
         .barra-superior {
             display: flex;
@@ -24,6 +21,8 @@ $autenticado = estaAutenticado();
             margin-bottom: 1.5rem;
             padding-bottom: 0.8rem;
             border-bottom: 1px solid rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .btn-volver {
             background: transparent;
@@ -132,11 +131,14 @@ $autenticado = estaAutenticado();
 </head>
 <body>
     <div class="barra-superior">
-        <button class="btn-volver" onclick="location.href='/'">← Volver al catálogo</button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn-volver" onclick="location.href='/'">← Volver al catálogo</button>
+            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+        </div>
         <?php if ($admin): ?>
-            <span style="font-size: 0.85rem; color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 4px 10px; border-radius: 12px;">Modo Administrador</span>
+            <span style="font-size: 0.85rem; color: #4caf50; font-weight: bold; background: #2a2a2a; border: 1px solid #444; padding: 4px 10px; border-radius: 12px;">Modo Administrador</span>
         <?php elseif ($autenticado): ?>
-            <span style="font-size: 0.85rem; color: #0277bd; font-weight: bold; background: #e1f5fe; padding: 4px 10px; border-radius: 12px;">Modo Cliente</span>
+            <span style="font-size: 0.85rem; color: #64b5f6; font-weight: bold; background: #2a2a2a; border: 1px solid #444; padding: 4px 10px; border-radius: 12px;">Modo Cliente</span>
         <?php endif; ?>
     </div>
 

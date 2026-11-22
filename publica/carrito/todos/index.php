@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../includes/auth.php';
 require_once __DIR__ . '/../../../includes/carrito.php';
+require_once __DIR__ . '/../../../includes/layout.php';
 
 requerirAuth();
 requerirCliente();
@@ -12,11 +13,7 @@ $resumen = obtenerResumenCarrito($user->id);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
-    <title>InfoMatics - Carrito de Compras</title>
-    <link rel="icon" href="/recursos/logo.png" type="image/png">
-    <link rel="stylesheet" href="https://gorosito.red/dame/simple.php?color=red" />
+    <?php renderHead('InfoMatics - Carrito de Compras'); ?>
     <style>
         .barra-superior {
             display: flex;
@@ -25,6 +22,8 @@ $resumen = obtenerResumenCarrito($user->id);
             margin-bottom: 1.5rem;
             padding-bottom: 0.8rem;
             border-bottom: 1px solid rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .resumen-card {
             background: #ffffff;
@@ -43,9 +42,12 @@ $resumen = obtenerResumenCarrito($user->id);
 </head>
 <body>
     <div class="barra-superior">
-        <button onclick="location.href='/';" style="background: transparent; border: 1px solid #777; color: #444; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            ← Seguir comprando
-        </button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="location.href='/';" style="background: transparent; border: 1px solid #777; color: #444; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                ← Seguir comprando
+            </button>
+            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+        </div>
         <button onclick="location.href='/formulario-logout.php';" style="background: transparent; border: 1px solid #bbb; color: #666; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
             Cerrar sesión
         </button>
