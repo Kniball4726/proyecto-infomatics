@@ -95,9 +95,8 @@ class UsuarioService {
 
     public static function eliminar(int $id): bool {
         $db = Connection::get();
-        // Eliminar también posibles carritos asociados
-        $stmtCart = $db->prepare("DELETE FROM TCarrito WHERE _idUsuario = ?");
-        $stmtCart->execute([$id]);
+        // Restituir productos del carrito al stock de la tienda antes de eliminar
+        CarritoService::vaciarYRestituir($id);
 
         $stmt = $db->prepare("DELETE FROM TUsuarios WHERE _id = ?");
         return $stmt->execute([$id]);

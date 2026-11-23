@@ -27,25 +27,8 @@ class PedidoService {
             }
 
             $total = 0.0;
-            // 1. Validar disponibilidad de stock para cada ítem
+            // 1. Calcular importe total (el stock ya fue reservado/descontado en tiempo real al ingresar al carrito)
             foreach ($items as $item) {
-                $stmtStock = $db->prepare("SELECT _stock, _nombre FROM TProductos WHERE _id = ? AND _activo = 1");
-                $stmtStock->execute([$item->producto_id]);
-                $prod = $stmtStock->fetch();
-
-                if (!$prod) {
-                    $db->rollBack();
-                    return ['success' => false, 'error' => "El producto '{$item->_nombre}' ya no está disponible."];
-                }
-
-                if ($prod->_stock < $item->_cantidad) {
-                    $db->rollBack();
-                    return [
-                        'success' => false, 
-                        'error' => "Stock insuficiente para '{$prod->_nombre}'. Disponibles: {$prod->_stock}, solicitados: {$item->_cantidad}."
-                    ];
-                }
-
                 $total += ($item->_precio * $item->_cantidad);
             }
 
@@ -57,16 +40,10 @@ class PedidoService {
             $stmtPedido->execute([$idUsuario, $total]);
             $idPedido = (int)$db->lastInsertId();
 
-            // 3. Insertar detalle de cada producto y descontar stock
+            // 3. Insertar detalle de cada producto vendido
             $stmtDetalle = $db->prepare("
                 INSERT INTO TDetallePedido (_idPedido, _idProducto, _cantidad, _precioUnitario, _subtotal)
                 VALUES (?, ?, ?, ?, ?)
-            ");
-
-            $stmtUpdateStock = $db->prepare("
-                UPDATE TProductos 
-                SET _stock = _stock - ? 
-                WHERE _id = ?
             ");
 
             foreach ($items as $item) {
@@ -78,11 +55,9 @@ class PedidoService {
                     $item->_precio,
                     $subtotal
                 ]);
-
-                $stmtUpdateStock->execute([$item->_cantidad, $item->producto_id]);
             }
 
-            // 4. Vaciar carrito del usuario
+            // 4. Vaciar carrito del usuario (la compra se confirma y los productos quedan asignados al pedido)
             $stmtVaciar = $db->prepare("DELETE FROM TCarrito WHERE _idUsuario = ?");
             $stmtVaciar->execute([$idUsuario]);
 

@@ -30,8 +30,20 @@ class CarritoController {
         $userId = (int)($user->_id ?? $user->id ?? 0);
 
         if ($idProducto > 0) {
-            CarritoService::agregar($userId, $idProducto, $cantidad);
-            $_SESSION['toast'] = ['tipo' => 'success', 'mensaje' => '🛒 Producto agregado a tu carrito.'];
+            $resultado = CarritoService::agregar($userId, $idProducto, $cantidad);
+            if ($resultado['success']) {
+                $nombre = htmlspecialchars($resultado['nombre'] ?? 'Producto');
+                $restante = (int)($resultado['stockRestante'] ?? 0);
+                $_SESSION['toast'] = [
+                    'tipo' => 'success', 
+                    'mensaje' => "🛒 '$nombre' agregado. Stock disponible restante: $restante."
+                ];
+            } else {
+                $_SESSION['toast'] = [
+                    'tipo' => 'error', 
+                    'mensaje' => "⚠️ " . ($resultado['error'] ?? 'No hay stock disponible.')
+                ];
+            }
         }
 
         $referer = $_SERVER['HTTP_REFERER'] ?? '/';
@@ -47,8 +59,16 @@ class CarritoController {
         $userId = (int)($user->_id ?? $user->id ?? 0);
 
         if ($idProducto > 0) {
-            CarritoService::quitar($userId, $idProducto, $todo);
-            $_SESSION['toast'] = ['tipo' => 'info', 'mensaje' => $todo ? '🗑️ Producto quitado del carrito.' : 'Cantidad actualizada.'];
+            $resultado = CarritoService::quitar($userId, $idProducto, $todo);
+            if ($resultado['success']) {
+                $restauradas = (int)($resultado['restauradas'] ?? 1);
+                $_SESSION['toast'] = [
+                    'tipo' => 'info', 
+                    'mensaje' => $todo 
+                        ? "🗑️ Producto eliminado del carrito (se restituyeron $restauradas u. al stock)." 
+                        : "Se devolvió 1 unidad al stock disponible de la tienda."
+                ];
+            }
         }
 
         $referer = $_SERVER['HTTP_REFERER'] ?? '/carrito/todos';

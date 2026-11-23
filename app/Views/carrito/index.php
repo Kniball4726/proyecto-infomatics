@@ -74,6 +74,7 @@
                     $precio = (float)($cadaRegistro->_precio ?? 0);
                     $cantidad = (int)($cadaRegistro->_cantidad ?? 1);
                     $subtotal = (float)($cadaRegistro->subtotal ?? ($precio * $cantidad));
+                    $stockDisponible = (int)($cadaRegistro->_stock ?? 0);
                     ?>
                     <article id="idArticulo_<?= $idCarrito ?>" style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                         <div style="flex: 1; min-width: 200px;">
@@ -81,21 +82,38 @@
                             <p style="margin: 0.3rem 0; font-weight: bold; color: #333;">
                                 Precio unitario: $ <?= number_format($precio, 2, ',', '.') ?>
                             </p>
+                            <div style="font-size: 0.85rem; margin-top: 4px;">
+                                <?php if ($stockDisponible > 0): ?>
+                                    <span style="color: #2e7d32; font-weight: 600;">
+                                        📦 Stock restante en tienda: <strong><?= $stockDisponible ?> u.</strong>
+                                    </span>
+                                <?php else: ?>
+                                    <span style="color: #c62828; font-weight: 700;">
+                                        ⚡ Tienes todas las unidades disponibles reservadas en tu carrito.
+                                    </span>
+                                <?php endif; ?>
+                            </div>
                         </div>
 
                         <!-- Ajuste de Cantidad y Subtotal -->
                         <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
                             <!-- Controles de Cantidad (+ y -) -->
                             <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 8px; border: 1px solid #ccc;">
-                                <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/quitar/?id=<?= $idProd ?>'" title="Restar 1 unidad">
+                                <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/quitar/?id=<?= $idProd ?>'" title="Restar 1 unidad (se devuelve al stock)">
                                     −
                                 </button>
                                 <span style="font-weight: 800; font-size: 1.15rem; min-width: 30px; text-align: center;">
                                     <?= $cantidad ?>
                                 </span>
-                                <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/agregar/?id=<?= $idProd ?>'" title="Sumar 1 unidad">
-                                    +
-                                </button>
+                                <?php if ($stockDisponible > 0): ?>
+                                    <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/agregar/?id=<?= $idProd ?>'" title="Sumar 1 unidad (quedan <?= $stockDisponible ?> en stock)">
+                                        +
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-secondary btn-icon" disabled style="opacity: 0.35; cursor: not-allowed;" title="No quedan más unidades en stock">
+                                        +
+                                    </button>
+                                <?php endif; ?>
                             </div>
 
                             <!-- Subtotal -->
