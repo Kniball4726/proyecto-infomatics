@@ -182,7 +182,7 @@ sort($categorias);
                         </div>
 
                         <nav style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px;">
-                            <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver?id=<?= $cadaRegistro->_id ?>'">
+                            <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver/?id=<?= $cadaRegistro->_id ?>'">
                                 ℹ️ Más info
                             </button>
                             

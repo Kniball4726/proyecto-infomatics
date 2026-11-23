@@ -71,7 +71,7 @@ class CarritoController {
             }
         }
 
-        $referer = $_SERVER['HTTP_REFERER'] ?? '/carrito/todos';
+        $referer = $_SERVER['HTTP_REFERER'] ?? '/carrito/todos/';
         header("Location: $referer");
         exit();
     }

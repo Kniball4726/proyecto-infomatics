@@ -8,7 +8,7 @@ class Connection {
 
     public static function get(): PDO {
         if (self::$instance === null) {
-            $dbPath = dirname(__DIR__, 2) . '/infomatics.db';
+            $dbPath = getenv('DB_PATH') ?: (dirname(__DIR__, 2) . '/infomatics.db');
             $debeInicializar = !file_exists($dbPath) || filesize($dbPath) === 0;
 
             self::$instance = new PDO("sqlite:$dbPath", null, null, [

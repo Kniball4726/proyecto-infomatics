@@ -24,14 +24,14 @@ class PedidoController {
                 'tipo' => 'success', 
                 'mensaje' => "🎉 ¡Compra confirmada con éxito! Tu pedido #{$resultado['idPedido']} ha sido registrado y el stock actualizado."
             ];
-            header("Location: /pedidos/ver?id=" . $resultado['idPedido']);
+            header("Location: /pedidos/ver/?id=" . $resultado['idPedido']);
             exit();
         } else {
             $_SESSION['toast'] = [
                 'tipo' => 'error', 
                 'mensaje' => $resultado['error'] ?? 'No se pudo completar la compra.'
             ];
-            header("Location: /carrito/todos");
+            header("Location: /carrito/todos/");
             exit();
         }
     }

@@ -15,7 +15,7 @@
         <h1 style="margin: 0;">Modificar Producto #<?= $producto->_id ?></h1>
         <nav style="display: flex; gap: 10px; align-items: center;">
             <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-            <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver?id=<?= $producto->_id ?>'">← Volver al producto</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver/?id=<?= $producto->_id ?>'">← Volver al producto</button>
         </nav>
     </header>
     <main>

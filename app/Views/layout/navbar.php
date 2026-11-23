@@ -42,7 +42,7 @@ $admin = AuthService::esAdmin();
                 $userId = (int)($user->_id ?? $user->id ?? 0);
                 $resumen = CarritoService::obtenerResumen($userId);
             ?>
-                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos';" style="gap: 10px;">
+                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos/';" style="gap: 10px;">
                     <span>🛒 Carrito: <strong><?= $resumen->total_items ?></strong> <?= ($resumen->total_items == 1 ? 'ítem' : 'ítems') ?></span>
                     <span style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.88rem;">$ <?= number_format($resumen->total_precio, 2, ',', '.') ?></span>
                 </button>

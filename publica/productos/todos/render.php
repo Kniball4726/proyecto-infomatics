@@ -9,7 +9,7 @@ $cliente = esCliente();
         Precio: $ <?= number_format($cadaRegistro->_precio, 2, ',', '.') ?>
     </p>
     <nav style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver?id=<?= $cadaRegistro->_id ?>'">
+        <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver/?id=<?= $cadaRegistro->_id ?>'">
             ℹ️ Más info
         </button>
         

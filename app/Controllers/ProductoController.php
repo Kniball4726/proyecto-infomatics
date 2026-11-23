@@ -45,7 +45,7 @@ class ProductoController {
 
         $id = ProductoService::crear($datos);
         $_SESSION['toast'] = ['tipo' => 'success', 'mensaje' => '✓ Producto creado exitosamente.'];
-        header("Location: /productos/ver?id=" . $id);
+        header("Location: /productos/ver/?id=" . $id);
         exit();
     }
 
@@ -77,7 +77,7 @@ class ProductoController {
 
         ProductoService::actualizar($id, $datos);
         $_SESSION['toast'] = ['tipo' => 'success', 'mensaje' => '✓ Producto modificado correctamente.'];
-        header("Location: /productos/ver?id=" . $id);
+        header("Location: /productos/ver/?id=" . $id);
         exit();
     }
 

@@ -10,8 +10,8 @@
     <header>
         <h1>Subsistema de carrito</h1>
     </header>
-    <a href="/carrito/nuevo" full><button full>Insertar un/a nuev@ carrito</button></a><br>
-    <a href="/carrito/todos" full><button full>Ver tod@s l@s carrito</button></a><br>
+    <a href="/carrito/nuevo/" full><button full>Insertar un/a nuev@ carrito</button></a><br>
+    <a href="/carrito/todos/" full><button full>Ver tod@s l@s carrito</button></a><br>
     <script>
         location.href = "/carrito/todos/";
     </script>

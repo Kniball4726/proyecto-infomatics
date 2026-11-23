@@ -116,7 +116,7 @@
                                 </strong>
                             </div>
 
-                            <button type="button" class="btn btn-info" onclick="location.href='/pedidos/ver?id=<?= $pedido->_id ?>'">
+                            <button type="button" class="btn btn-info" onclick="location.href='/pedidos/ver/?id=<?= $pedido->_id ?>'">
                                 📄 Ver Detalle
                             </button>
                         </div>

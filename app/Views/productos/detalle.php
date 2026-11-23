@@ -99,7 +99,7 @@ $encontrado = $producto;
         <div style="display: flex; gap: 10px; align-items: center;">
             <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
             <?php if ($cliente): ?>
-                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos'">
+                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos/'">
                     🛒 Ver Carrito
                 </button>
             <?php endif; ?>
