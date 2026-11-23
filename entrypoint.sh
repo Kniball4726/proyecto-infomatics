@@ -6,9 +6,14 @@ PORT="${PORT:-10000}"
 
 echo "Configurando Apache en puerto ${PORT}..."
 
-# Ajustar puerto en ports.conf y en la configuración del VirtualHost
-sed -i "s/Listen [0-9]*/Listen ${PORT}/" /etc/apache2/ports.conf
-sed -i "s/<VirtualHost \*:[0-9]*>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
+# Exportar variable de puerto para Apache
+echo "export PORT=${PORT}" >> /etc/apache2/envvars
+
+# Forzar a Apache a escuchar únicamente en el puerto asignado por Render
+echo "Listen ${PORT}" > /etc/apache2/ports.conf
+
+# Configurar VirtualHost con el puerto dinámico
+sed -i "s/<VirtualHost \*:[^>]*>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
 # Crear carpetas necesarias y asegurar permisos de escritura para www-data (SQLite y uploads)
 mkdir -p /var/www/html/publica/recursos/productos
