@@ -152,49 +152,66 @@ Luego ingresa a `http://localhost:3000/` en tu navegador. Para detenerlo, presio
 
 ## Arquitectura y Guía para Desarrolladores
 
-El proyecto aplica el **principio de modularidad y separación de responsabilidades**, eliminando scripts monolíticos y centralizando la lógica en una capa de servicios reutilizable:
+El proyecto aplica una **Arquitectura en Capas (Layered MVC Architecture)** que separa de forma estricta las vistas, los controladores, la lógica de negocio y la base de datos:
 
 ```text
 proyecto-infomatics/
-├── includes/                               # CAPA DE SERVICIOS Y LÓGICA DE NEGOCIO
-│   ├── db.php                              # Conexión Singleton PDO SQLite con excepciones activadas
-│   ├── auth.php                            # Gestión de sesión, autenticación y guards de rol
-│   ├── layout.php                          # Motor de componentes HTML, cabeceras, Navbar y Dark Mode
-│   ├── productos.php                       # Servicio CRUD de productos (ORDER BY _id DESC)
-│   ├── carrito.php                         # Servicio de gestión de carrito, agregación y JOIN SQL
-│   └── usuarios.php                        # Servicio CRUD completo de usuarios y clientes
+├── app/                                    # NÚCLEO DE LA APLICACIÓN (LÓGICA PRIVADA)
+│   ├── bootstrap.php                       # Autocargador PSR-4 y arranque de sesión
+│   │
+│   ├── Database/                           # 1. CAPA DE PERSISTENCIA Y BASE DE DATOS
+│   │   ├── Connection.php                  # Conexión Singleton con auto-inicialización
+│   │   └── schema.sql                      # DDL y semillas para autogenerar la BD si no existe
+│   │
+│   ├── Services/                           # 2. CAPA DE LÓGICA DE NEGOCIO Y DOMINIO
+│   │   ├── AuthService.php                 # Control de sesión, autenticación y reglas de roles
+│   │   ├── ProductoService.php             # Operaciones del catálogo y validación de productos
+│   │   ├── CarritoService.php              # Cálculos de subtotales, totales y agregaciones SQL
+│   │   └── UsuarioService.php              # Gestión de clientes, credenciales y permisos
+│   │
+│   ├── Views/                              # 3. CAPA DE VISTAS (PRESENTACIÓN DESACOPLADA)
+│   │   ├── View.php                        # Motor de renderizado de vistas
+│   │   ├── layout/                         # Componentes comunes (head, navbar, hero, header)
+│   │   ├── auth/                           # Vista de inicio de sesión con soporte Dark Mode
+│   │   ├── productos/                      # Catálogo, ficha de detalle y formularios
+│   │   ├── carrito/                        # Tabla interactiva del carrito y checkout
+│   │   └── usuarios/                       # Listado y formularios de gestión de clientes
+│   │
+│   └── Controllers/                        # 4. CAPA DE CONTROLADORES
+│       ├── AuthController.php              # Orquestación de login, logout y validación de accesos
+│       ├── ProductoController.php          # Orquestación del catálogo, detalle, CRUD y API JSON
+│       ├── CarritoController.php           # Orquestación de adición, decremento y checkout
+│       └── UsuarioController.php           # Orquestación del panel de clientes, CRUD y API JSON
 │
 ├── publica/                                # RAÍZ WEB EXPUESTA (DOCUMENT ROOT)
-│   ├── index.php                           # Controlador principal del catálogo
-│   ├── formulario-login.php                # Vista de inicio de sesión con soporte Dark Mode
-│   ├── formulario-login-procesar.php       # Procesador de autenticación
-│   ├── formulario-logout.php               # Cierre de sesión y limpieza
-│   ├── productos/
-│   │   ├── todos/                          # Listado de productos (render de tarjetas)
-│   │   ├── ver/                            # Ficha técnica de detalle (2 columnas + acciones integradas)
-│   │   ├── nuevo/                          # Alta de producto (Admin)
-│   │   ├── editar/                         # Modificación de producto (Admin)
-│   │   ├── borrar/                         # Eliminación de producto (Admin)
-│   │   └── api/                            # Endpoint JSON público de productos
-│   ├── carrito/
-│   │   ├── todos/                          # Vista y tabla interactiva del carrito (Cliente)
-│   │   ├── agregar/                        # Endpoint de adición/incremento (+1)
-│   │   ├── quitar/                         # Endpoint de decremento (-1) o eliminación total
-│   │   └── finalizar/                      # Pantalla de confirmación de compra simulada
-│   ├── usuarios/
-│   │   ├── todos/                          # Listado administrativo de clientes
-│   │   ├── nuevo/                          # Formulario y procesador de alta de cliente
-│   │   ├── editar/                         # Formulario y procesador de edición de cliente
-│   │   ├── borrar/                         # Eliminación de cliente
-│   │   └── api/                            # Endpoint JSON de usuarios
-│   └── recursos/                           # Activos estáticos (logo.png, portada.png)
+│   ├── index.php                           # Despachador principal al catálogo
+│   ├── formulario-login.php                # Despachador a AuthController::login()
+│   ├── formulario-login-procesar.php       # Despachador a AuthController::procesarLogin()
+│   ├── formulario-logout.php               # Despachador a AuthController::logout()
+│   ├── productos/                          # Puntos de entrada HTTP delegados a ProductoController
+│   ├── carrito/                            # Puntos de entrada HTTP delegados a CarritoController
+│   ├── usuarios/                           # Puntos de entrada HTTP delegados a UsuarioController
+│   └── recursos/                           # Activos estáticos públicos (logo.png, portada.png)
 │
-├── infomatics.db                           # Base de datos relacional SQLite 3 activa
+├── docs/                                   # DOCUMENTACIÓN DEL PROYECTO
+│   └── Informe_Cumplimiento_Consignas_InfoMatics.pdf  # Informe formal en PDF
+│
+├── scripts/                                # UTILIDADES Y PANEL DE CONTROL
+│   └── servidor.php                        # Menú interactivo de control del servidor PHP
+│
+├── includes/                               # PUENTES DE COMPATIBILIDAD HACIA ATRÁS
+│   ├── db.php                              # Delegado a App\Database\Connection
+│   ├── auth.php                            # Delegado a App\Services\AuthService
+│   ├── layout.php                          # Delegado a app/Views/layout/
+│   ├── productos.php                       # Delegado a App\Services\ProductoService
+│   ├── carrito.php                         # Delegado a App\Services\CarritoService
+│   └── usuarios.php                        # Delegado a App\Services\UsuarioService
+│
+├── infomatics.db                           # Base de datos SQLite activa (ignorada en git)
 ├── iniciar_servidor.vbs                    # Lanzador 100% silencioso para Windows (sin consola)
 ├── detener_servidor.bat                    # Script para detener el servidor en un clic
-├── iniciar.bat                             # Lanzador interactivo por consola
-├── servidor.php                            # Menú CLI y orquestador del servidor PHP
-├── Informe_Cumplimiento_Consignas_InfoMatics.pdf  # Informe formal de consignas académicas
+├── iniciar.bat                             # Lanzador por consola (ejecuta scripts/servidor.php)
+├── .gitignore                              # Reglas de exclusión de binarios y temporales
 └── README.md                               # Documentación integral del proyecto
 ```
 
@@ -273,7 +290,7 @@ CREATE TABLE TCarrito (
 
 ## Informe de Cumplimiento de Consignas (PDF)
 
-El proyecto incluye el documento compilado [Informe_Cumplimiento_Consignas_InfoMatics.pdf](Informe_Cumplimiento_Consignas_InfoMatics.pdf), que detalla punto por punto el cumplimiento de las consignas educativas (puntos 1 al 18), indicando los archivos, funciones, consultas SQL y justificaciones técnicas aplicadas.
+El proyecto incluye el documento compilado en la carpeta de documentación: [docs/Informe_Cumplimiento_Consignas_InfoMatics.pdf](docs/Informe_Cumplimiento_Consignas_InfoMatics.pdf), que detalla punto por punto el cumplimiento de las consignas educativas (puntos 1 al 18), indicando los archivos, funciones, consultas SQL y justificaciones técnicas aplicadas.
 
 ---
 *InfoMatics &copy; 2026 — Plataforma de Comercio y Gestión.*

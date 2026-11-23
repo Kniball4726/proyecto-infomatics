@@ -1,12 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../app/bootstrap.php';
 
-$username = trim($_REQUEST['nmUsername'] ?? '');
-$password = trim($_REQUEST['nmPassword'] ?? '');
+use App\Controllers\AuthController;
 
-if (autenticarUsuario($username, $password)) {
-    header("Location: /");
-} else {
-    header("Location: /formulario-login.php");
-}
-exit();
+AuthController::procesarLogin();

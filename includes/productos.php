@@ -1,73 +1,27 @@
 <?php
 /**
- * Servicio de Productos
+ * Servicio de Productos (Delegado a App\Services\ProductoService)
  */
+require_once __DIR__ . '/../app/Services/ProductoService.php';
 
-require_once __DIR__ . '/db.php';
+use App\Services\ProductoService;
 
 function obtenerProductos(string $orden = 'DESC'): array {
-    $db = getDB();
-    $direccion = strtoupper($orden) === 'ASC' ? 'ASC' : 'DESC';
-    $stmt = $db->query("SELECT * FROM TProductos ORDER BY _id $direccion");
-    return $stmt->fetchAll();
+    return ProductoService::obtenerTodos($orden);
 }
 
 function obtenerProductoPorId(int $id): ?object {
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM TProductos WHERE _id = ? LIMIT 1");
-    $stmt->execute([$id]);
-    $producto = $stmt->fetch();
-    return $producto ?: null;
+    return ProductoService::obtenerPorId($id);
 }
 
-function crearProducto(array $datos): bool {
-    $db = getDB();
-    $stmt = $db->prepare("
-        INSERT INTO TProductos (_nombre, _descripcion, _categoria, _precio, _stock, _imagen, _activo)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
-    return $stmt->execute([
-        $datos['nombre'] ?? '',
-        $datos['descripcion'] ?? '',
-        $datos['categoria'] ?? '',
-        (float)($datos['precio'] ?? 0),
-        (int)($datos['stock'] ?? 0),
-        $datos['imagen'] ?? '',
-        (int)($datos['activo'] ?? 1),
-    ]);
+function crearProducto(array $datos): int {
+    return ProductoService::crear($datos);
 }
 
 function actualizarProducto(int $id, array $datos): bool {
-    $db = getDB();
-    $stmt = $db->prepare("
-        UPDATE TProductos SET 
-            _nombre = ?,
-            _descripcion = ?,
-            _categoria = ?,
-            _precio = ?,
-            _stock = ?,
-            _imagen = ?,
-            _activo = ?
-        WHERE _id = ?
-    ");
-    return $stmt->execute([
-        $datos['nombre'] ?? '',
-        $datos['descripcion'] ?? '',
-        $datos['categoria'] ?? '',
-        (float)($datos['precio'] ?? 0),
-        (int)($datos['stock'] ?? 0),
-        $datos['imagen'] ?? '',
-        (int)($datos['activo'] ?? 1),
-        $id,
-    ]);
+    return ProductoService::actualizar($id, $datos);
 }
 
 function eliminarProducto(int $id): bool {
-    $db = getDB();
-    // Eliminar referencias en carrito primero
-    $stmtCarrito = $db->prepare("DELETE FROM TCarrito WHERE _idProducto = ?");
-    $stmtCarrito->execute([$id]);
-
-    $stmt = $db->prepare("DELETE FROM TProductos WHERE _id = ?");
-    return $stmt->execute([$id]);
+    return ProductoService::eliminar($id);
 }

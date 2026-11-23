@@ -1,0 +1,29 @@
+# ==========================================
+# Bases de datos binarias locales
+# (La BD se autogenera desde app/Database/schema.sql)
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# Archivos temporales y de entorno
+# ==========================================
+*.tmp
+*.log
+sess_*
+
+# ==========================================
+# IDEs y Editores de código
+# ==========================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ==========================================
+# Archivos del Sistema Operativo
+# ==========================================
+Thumbs.db
+Desktop.ini
+.DS_Store

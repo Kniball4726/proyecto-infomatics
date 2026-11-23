@@ -1,16 +1,11 @@
 <?php
 /**
- * Conexión y utilidades de Base de Datos
+ * Conexión y utilidades de Base de Datos (Delegado a App\Database\Connection)
  */
+require_once __DIR__ . '/../app/Database/Connection.php';
+
+use App\Database\Connection;
 
 function getDB(): PDO {
-    static $db = null;
-    if ($db === null) {
-        $rutaBD = __DIR__ . '/../infomatics.db';
-        $db = new PDO("sqlite:$rutaBD", null, null, [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-        ]);
-    }
-    return $db;
+    return Connection::get();
 }

@@ -1,17 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../includes/auth.php';
-require_once __DIR__ . '/../../../includes/carrito.php';
+require_once __DIR__ . '/../../../app/bootstrap.php';
 
-requerirAuth();
-requerirCliente();
+use App\Controllers\CarritoController;
 
-$user = usuarioActual();
-$idProducto = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$eliminarTodo = isset($_GET['todo']) && $_GET['todo'] == 1;
-
-if ($idProducto > 0 && $user) {
-    quitarDelCarrito($user->id, $idProducto, $eliminarTodo);
-}
-
-header("Location: /carrito/todos");
-exit();
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$todo = !empty($_GET['todo']);
+CarritoController::quitar($id, $todo);

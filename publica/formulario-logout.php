@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-cerrarSesion();
-header("Location: /");
-exit();
+require_once __DIR__ . '/../app/bootstrap.php';
+
+use App\Controllers\AuthController;
+
+AuthController::logout();

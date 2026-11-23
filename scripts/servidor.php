@@ -1,5 +1,5 @@
 <?php
-$dir = addslashes(__DIR__);
+$dir = addslashes(dirname(__DIR__));
 $menu = ("---------------------------------------------\n"
        . "           INFOMATICS - PANEL DE CONTROL     \n"
        . "---------------------------------------------\n"
@@ -30,11 +30,11 @@ while ($r !== '0') {
     } elseif ($r === '3') {
         exec("start http://localhost:3000/");
     } elseif ($r === '4') {
-        exec("start code .");
+        exec("start code \"$dir\"");
     } elseif ($r === '5') {
-        exec("start explorer .");
+        exec("start explorer \"$dir\"");
     } elseif ($r === '6') {
-        exec("start cmd /k cd .");
+        exec("start cmd /k cd /d \"$dir\"");
     } elseif ($r === '7') {
         exec("start notepad c:\\xampp\\php\\php.ini");
     } else {

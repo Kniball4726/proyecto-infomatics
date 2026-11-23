@@ -1,48 +1,41 @@
 <?php
-    session_start() ;
-    $url = (object)$_GET ;
-    $id = $url->id ?? 1 ;
-    $reglaSQL = "SELECT * FROM TUsuarios WHERE _id='$id';" ;
-    $base = new PDO( "sqlite:$_SERVER[DOCUMENT_ROOT]/../infomatics.db" ) ;
-    $accion = $base->query( $reglaSQL ) ;
-    if( !$accion ):
-        printf( "Hubo un error - %s", $base->errorInfo()[2] ) ;
-        die() ;
-    endif;
-    $todos = $accion->fetchAll( PDO::FETCH_OBJ ) ;
+require_once __DIR__ . '/../../../app/bootstrap.php';
+
+use App\Services\AuthService;
+use App\Services\UsuarioService;
+
+AuthService::requerirAdmin();
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+$encontrado = UsuarioService::obtenerPorId($id);
 ?>
-<html >
-    
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <title >Tu App</title>
-    <meta name="viewport" content="width=device-width,user-scalable=no" />
+    <title>InfoMatics - Ver Usuario</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css" />
-    <style >[full]{ width: 100% }</style>
+    <style>[full]{ width: 100% }</style>
 </head>
-
-    <body >
-        <header >
-            <h1>Viendo un TUsuarios</h1>
-            <nav>
-                <button onclick="history.back()">Volver</button>
-            </nav>
-        </header>
-        <section >
-<?php
-    if( count($todos) == 0 ):
-        printf( "<p> No se encontró el registro %d </p>", $id );
-    else:
-        $encontrado = $todos[0] ;
-        printf( "<details ><pre>%s</pre></details>", json_encode( $encontrado ) ) ;
-            printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_id", $encontrado->_id );
-printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_nombre", $encontrado->_nombre );
-printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_apellido", $encontrado->_apellido );
-printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_email", $encontrado->_email );
-printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_clave", $encontrado->_clave );
-printf( "<p><strong>%s</strong>: <mark>%s</mark></p>", "_fechaRegistro", $encontrado->_fechaRegistro );
-
-    endif;
-?>
-    </body>
+<body>
+    <header>
+        <h1>Viendo Usuario #<?= $id ?></h1>
+        <nav>
+            <button onclick="location.href='/usuarios/todos/'">← Volver al listado</button>
+        </nav>
+    </header>
+    <section>
+        <?php if (!$encontrado): ?>
+            <p>No se encontró el registro #<?= $id ?></p>
+        <?php else: ?>
+            <p><strong>ID:</strong> <mark><?= htmlspecialchars($encontrado->_id) ?></mark></p>
+            <p><strong>Nombre:</strong> <mark><?= htmlspecialchars($encontrado->_nombre) ?></mark></p>
+            <p><strong>Apellido:</strong> <mark><?= htmlspecialchars($encontrado->_apellido) ?></mark></p>
+            <p><strong>Email:</strong> <mark><?= htmlspecialchars($encontrado->_email) ?></mark></p>
+            <p><strong>Fecha Registro:</strong> <mark><?= htmlspecialchars($encontrado->_fechaRegistro ?? 'N/A') ?></mark></p>
+            <p><strong>Rol:</strong> <mark><?= ((int)$encontrado->_nivel > 1 ? 'Administrador' : 'Cliente') ?></mark></p>
+        <?php endif; ?>
+    </section>
+</body>
 </html>
