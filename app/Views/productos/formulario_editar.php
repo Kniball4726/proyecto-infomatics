@@ -14,12 +14,13 @@
     <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
         <h1 style="margin: 0;">Modificar Producto #<?= $producto->_id ?></h1>
         <nav style="display: flex; gap: 10px; align-items: center;">
-            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-            <button onclick="location.href='/productos/ver?id=<?= $producto->_id ?>'">← Volver al producto</button>
+            <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver?id=<?= $producto->_id ?>'">← Volver al producto</button>
         </nav>
     </header>
     <main>
-        <form action="/productos/editar/procesar.php" method="POST">
+        <form action="/productos/editar/procesar.php" method="POST" enctype="multipart/form-data">
+            <?= \App\Services\CsrfService::campoHtml() ?>
             <input type="hidden" name="id" value="<?= $producto->_id ?>">
 
             <article>
@@ -47,14 +48,26 @@
                 <input type="number" id="id_stock" name="stock" value="<?= $producto->_stock ?>" required full>
             </article>
 
+            <?php if (!empty($producto->_imagen)): ?>
+                <article style="text-align: center; background: rgba(0,0,0,0.02); padding: 10px;">
+                    <label>Imagen Actual:</label><br>
+                    <img src="<?= htmlspecialchars($producto->_imagen) ?>" alt="Preview" style="max-height: 100px; max-width: 100%; object-fit: contain; margin-top: 6px; border-radius: 4px;">
+                </article>
+            <?php endif; ?>
+
             <article>
-                <label for="id_imagen">URL de la Imagen:</label><br>
-                <input type="text" id="id_imagen" name="imagen" value="<?= htmlspecialchars($producto->_imagen ?? '') ?>" full>
+                <label for="id_imagen_archivo">Subir nueva imagen (reemplazará la actual):</label><br>
+                <input type="file" id="id_imagen_archivo" name="imagen_archivo" accept="image/*" full>
             </article>
 
             <article>
-                <button type="submit" style="background-color: #0277bd; color: #ffffff !important; font-weight: bold; padding: 10px 20px; cursor: pointer;">
-                    Guardar Cambios
+                <label for="id_imagen">O cambiar enlace URL de imagen:</label><br>
+                <input type="text" id="id_imagen" name="imagen" value="<?= htmlspecialchars($producto->_imagen ?? '') ?>" placeholder="https://..." full>
+            </article>
+
+            <article>
+                <button type="submit" class="btn btn-info">
+                    ✓ Guardar Cambios
                 </button>
             </article>
         </form>

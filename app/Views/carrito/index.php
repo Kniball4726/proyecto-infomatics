@@ -38,12 +38,12 @@
 <body>
     <div class="barra-superior">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="location.href='/';" style="background: transparent; border: 1px solid #777; color: #444; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            <button type="button" class="btn btn-secondary" onclick="location.href='/';">
                 ← Seguir comprando
             </button>
-            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+            <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
         </div>
-        <button onclick="location.href='/formulario-logout.php';" style="background: transparent; border: 1px solid #bbb; color: #666; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+        <button type="button" class="btn btn-secondary" onclick="location.href='/formulario-logout.php';">
             Cerrar sesión
         </button>
     </div>
@@ -56,7 +56,7 @@
         <?php if (count($items) === 0): ?>
             <article style="text-align: center; padding: 3rem 1rem; background: #fafafa; border-radius: 12px; border: 1px dashed #ccc;">
                 <p style="font-size: 1.3rem; color: #666; margin-bottom: 1.5rem;">Tu carrito está actualmente vacío.</p>
-                <button onclick="location.href='/';" style="background-color: #d32f2f; color: #ffffff !important; font-weight: bold; padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer;">
+                <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/';">
                     Ver catálogo de productos
                 </button>
             </article>
@@ -86,14 +86,14 @@
                         <!-- Ajuste de Cantidad y Subtotal -->
                         <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
                             <!-- Controles de Cantidad (+ y -) -->
-                            <div style="display: flex; align-items: center; gap: 8px; background: #f0f0f0; padding: 4px 10px; border-radius: 8px; border: 1px solid #ccc;">
-                                <button onclick="location.href='/carrito/quitar/?id=<?= $idProd ?>'" title="Restar 1 unidad" style="background: #e0e0e0; color: #111; border: 1px solid #bbb; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                    -
+                            <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 8px; border: 1px solid #ccc;">
+                                <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/quitar/?id=<?= $idProd ?>'" title="Restar 1 unidad">
+                                    −
                                 </button>
-                                <span style="font-weight: 800; font-size: 1.15rem; min-width: 30px; text-align: center; color: #111;">
+                                <span style="font-weight: 800; font-size: 1.15rem; min-width: 30px; text-align: center;">
                                     <?= $cantidad ?>
                                 </span>
-                                <button onclick="location.href='/carrito/agregar/?id=<?= $idProd ?>'" title="Sumar 1 unidad" style="background: #e0e0e0; color: #111; border: 1px solid #bbb; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                <button type="button" class="btn btn-secondary btn-icon" onclick="location.href='/carrito/agregar/?id=<?= $idProd ?>'" title="Sumar 1 unidad">
                                     +
                                 </button>
                             </div>
@@ -108,7 +108,7 @@
 
                             <!-- Botón Quitar por completo -->
                             <div>
-                                <button onclick="if(confirm('¿Seguro que deseas quitar <?= addslashes($nombre) ?> del carrito?')) location.href='/carrito/quitar/?id=<?= $idProd ?>&todo=1'" style="background-color: #b71c1c; color: #ffffff !important; border: 1px solid #7f0000; font-weight: bold; border-radius: 6px; padding: 8px 14px; cursor: pointer;">
+                                <button type="button" class="btn btn-danger" onclick="if(confirm('¿Seguro que deseas quitar <?= addslashes($nombre) ?> del carrito?')) location.href='/carrito/quitar/?id=<?= $idProd ?>&todo=1'">
                                     🗑️ Quitar
                                 </button>
                             </div>
@@ -128,9 +128,12 @@
                 </div>
 
                 <div>
-                    <button onclick="alert('¡Compra realizada con éxito! Monto: $ <?= number_format($resumen->total_precio, 2, ',', '.') ?>'); location.href='/';" style="background-color: #2e7d32; color: #ffffff !important; font-weight: bold; padding: 12px 28px; font-size: 1.1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(46,125,50,0.3);">
-                        Finalizar Compra
-                    </button>
+                    <form action="/pedidos/finalizar/index.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas finalizar la compra por un total de $ <?= number_format($resumen->total_precio, 2, ',', '.') ?>?');">
+                        <?= \App\Services\CsrfService::campoHtml() ?>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            ✓ Finalizar Compra
+                        </button>
+                    </form>
                 </div>
             </article>
         <?php endif; ?>

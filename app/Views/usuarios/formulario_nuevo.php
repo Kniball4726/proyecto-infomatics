@@ -15,7 +15,7 @@
         <h1 style="margin: 0;">Registrar Nuevo Cliente</h1>
         <nav style="display: flex; gap: 10px; align-items: center;">
             <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-            <button onclick="location.href='/usuarios/todos/'">← Volver al listado</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/usuarios/todos/'">← Volver al listado</button>
         </nav>
     </header>
     <main>
@@ -24,6 +24,7 @@
         <?php endif; ?>
 
         <form action="/usuarios/nuevo/procesar.php" method="POST">
+            <?= \App\Services\CsrfService::campoHtml() ?>
             <article>
                 <label for="id_nombre">Nombre:</label><br>
                 <input type="text" id="id_nombre" name="nombre" required full>
@@ -53,8 +54,8 @@
             </article>
 
             <article>
-                <button type="submit" style="background-color: #2e7d32; color: #ffffff !important; font-weight: bold; padding: 10px 20px; cursor: pointer;">
-                    Crear Cliente
+                <button type="submit" class="btn btn-success">
+                    ✓ Crear Cliente
                 </button>
             </article>
         </form>

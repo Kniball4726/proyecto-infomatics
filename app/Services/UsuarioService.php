@@ -23,8 +23,23 @@ class UsuarioService {
         return $user ?: null;
     }
 
+    public static function emailExiste(string $email, int $excluirId = 0): bool {
+        $db = Connection::get();
+        if ($excluirId > 0) {
+            $stmt = $db->prepare("SELECT COUNT(*) FROM TUsuarios WHERE _email = ? AND _id != ?");
+            $stmt->execute([trim($email), $excluirId]);
+        } else {
+            $stmt = $db->prepare("SELECT COUNT(*) FROM TUsuarios WHERE _email = ?");
+            $stmt->execute([trim($email)]);
+        }
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
     public static function crear(array $datos): bool {
         $db = Connection::get();
+        $clave = trim($datos['clave'] ?? '123456');
+        $hashClave = password_hash($clave, PASSWORD_BCRYPT);
+
         $stmt = $db->prepare("
             INSERT INTO TUsuarios (_nombre, _apellido, _email, _clave, _nivel)
             VALUES (?, ?, ?, ?, ?)
@@ -33,7 +48,7 @@ class UsuarioService {
             trim($datos['nombre'] ?? ''),
             trim($datos['apellido'] ?? ''),
             trim($datos['email'] ?? ''),
-            trim($datos['clave'] ?? '123456'),
+            $hashClave,
             (int)($datos['nivel'] ?? 1),
         ]);
     }
@@ -41,6 +56,7 @@ class UsuarioService {
     public static function actualizar(int $id, array $datos): bool {
         $db = Connection::get();
         if (!empty($datos['clave'])) {
+            $hashClave = password_hash(trim($datos['clave']), PASSWORD_BCRYPT);
             $stmt = $db->prepare("
                 UPDATE TUsuarios SET 
                     _nombre = ?,
@@ -54,7 +70,7 @@ class UsuarioService {
                 trim($datos['nombre'] ?? ''),
                 trim($datos['apellido'] ?? ''),
                 trim($datos['email'] ?? ''),
-                trim($datos['clave'] ?? ''),
+                $hashClave,
                 (int)($datos['nivel'] ?? 1),
                 $id,
             ]);

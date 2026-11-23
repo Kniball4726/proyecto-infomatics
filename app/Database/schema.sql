@@ -68,3 +68,24 @@ INSERT INTO TUsuarios (_id, _nombre, _apellido, _email, _clave, _fechaRegistro, 
 INSERT INTO TUsuarios (_id, _nombre, _apellido, _email, _clave, _fechaRegistro, _nivel) VALUES ('6', 'Admin', 'InfoMatics', 'admin@infomatics.com', 'admin123', '2026-11-22 21:20:10', '10');
 INSERT INTO TUsuarios (_id, _nombre, _apellido, _email, _clave, _fechaRegistro, _nivel) VALUES ('8', 'Gregory', 'DUQUE', 'gduque@iiconcepcion.edu.ar', '1713', '2026-11-22 22:21:23', '10');
 
+-- Estructura de tabla para TPedidos
+DROP TABLE IF EXISTS TPedidos;
+CREATE TABLE TPedidos (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    _idUsuario INTEGER NOT NULL REFERENCES TUsuarios(_id),
+    _total REAL NOT NULL,
+    _estado TEXT NOT NULL DEFAULT 'Completado',
+    _fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Estructura de tabla para TDetallePedido
+DROP TABLE IF EXISTS TDetallePedido;
+CREATE TABLE TDetallePedido (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    _idPedido INTEGER NOT NULL REFERENCES TPedidos(_id) ON DELETE CASCADE,
+    _idProducto INTEGER NOT NULL REFERENCES TProductos(_id),
+    _cantidad INTEGER NOT NULL,
+    _precioUnitario REAL NOT NULL,
+    _subtotal REAL NOT NULL
+);
+

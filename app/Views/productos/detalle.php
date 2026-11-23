@@ -24,15 +24,6 @@ $encontrado = $producto;
             flex-wrap: wrap;
             gap: 10px;
         }
-        .btn-volver {
-            background: transparent;
-            border: 1px solid #777;
-            color: #444;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
         .ficha-producto {
             display: grid;
             grid-template-columns: 1fr;
@@ -103,12 +94,12 @@ $encontrado = $producto;
 <body>
     <header class="barra-superior">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="btn-volver" onclick="location.href='/'">← Volver al catálogo</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/'">← Volver al catálogo</button>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+            <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
             <?php if ($cliente): ?>
-                <button onclick="location.href='/carrito/todos'" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; border-radius: 6px; padding: 6px 14px; cursor: pointer;">
+                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos'">
                     🛒 Ver Carrito
                 </button>
             <?php endif; ?>
@@ -120,7 +111,7 @@ $encontrado = $producto;
             <article style="text-align: center; padding: 3rem 1rem;">
                 <h2>⚠️ Producto no encontrado</h2>
                 <p>El producto solicitado no existe o fue dado de baja.</p>
-                <button onclick="location.href='/'">Volver a la tienda</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='/'">Volver a la tienda</button>
             </article>
         <?php else: ?>
             <article class="ficha-producto">
@@ -140,8 +131,17 @@ $encontrado = $producto;
                     </div>
 
                     <div class="stock-tag">
-                        <span>📦</span>
-                        <span>Stock disponible: <strong><?= (int)$encontrado->_stock ?> unidades</strong></span>
+                        <?php $stockActual = (int)($encontrado->_stock ?? 0); ?>
+                        <?php if ($stockActual <= 0): ?>
+                            <span>❌</span>
+                            <span style="color: #c62828;">Estado: <strong>Agotado (Sin stock disponible)</strong></span>
+                        <?php elseif ($stockActual <= 3): ?>
+                            <span>⚡</span>
+                            <span style="color: #e65100;">¡Apresúrate! Solo quedan <strong><?= $stockActual ?> unidades en stock</strong></span>
+                        <?php else: ?>
+                            <span>📦</span>
+                            <span>Stock disponible: <strong><?= $stockActual ?> unidades</strong></span>
+                        <?php endif; ?>
                     </div>
 
                     <p style="font-size: 1.05rem; line-height: 1.6; color: #444; margin: 0 0 1.5rem;">
@@ -151,20 +151,26 @@ $encontrado = $producto;
                     <!-- Panel de acciones contextuales dentro de la tarjeta -->
                     <div class="panel-acciones">
                         <?php if ($cliente): ?>
-                            <button onclick="location.href='/carrito/agregar/?id=<?= $encontrado->_id ?>'" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; font-size: 1.05rem; padding: 10px 22px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                                <span>🛒 Agregar al carrito</span>
-                            </button>
+                            <?php if ($stockActual > 0): ?>
+                                <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/carrito/agregar/?id=<?= $encontrado->_id ?>'">
+                                    <span>🛒 Agregar al carrito</span>
+                                </button>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-secondary btn-lg" disabled style="opacity: 0.5; cursor: not-allowed;" title="Producto sin stock disponible">
+                                    <span>Agotado</span>
+                                </button>
+                            <?php endif; ?>
                         <?php elseif (!$autenticado): ?>
-                            <button onclick="location.href='/formulario-login.php'" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; font-size: 1rem; padding: 10px 18px; border-radius: 6px; cursor: pointer;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/formulario-login.php'">
                                 Inicia sesión para comprar
                             </button>
                         <?php endif; ?>
 
                         <?php if ($admin): ?>
-                            <button onclick="location.href='/productos/editar/?id=<?= $encontrado->_id ?>'" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; font-size: 0.95rem; padding: 10px 16px; border-radius: 6px; cursor: pointer;">
+                            <button type="button" class="btn btn-info" onclick="location.href='/productos/editar/?id=<?= $encontrado->_id ?>'">
                                 ✏️ Modificar Producto
                             </button>
-                            <button onclick="if(confirm('¿Seguro que deseas eliminar este producto?')) location.href='/productos/borrar/procesar.php?id=<?= $encontrado->_id ?>'" style="background-color: #b71c1c; color: #ffffff !important; border: 1px solid #7f0000; font-weight: bold; font-size: 0.95rem; padding: 10px 16px; border-radius: 6px; cursor: pointer;">
+                            <button type="button" class="btn btn-danger" onclick="if(confirm('¿Seguro que deseas eliminar este producto?')) location.href='/productos/borrar/procesar.php?id=<?= $encontrado->_id ?>'">
                                 🗑️ Eliminar Producto
                             </button>
                         <?php endif; ?>

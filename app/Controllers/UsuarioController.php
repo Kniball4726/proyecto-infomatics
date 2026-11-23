@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Services\AuthService;
+use App\Services\CsrfService;
 use App\Services\UsuarioService;
 use App\Views\View;
 
@@ -29,6 +30,8 @@ class UsuarioController {
 
     public static function procesarNuevo(array $datos): void {
         AuthService::requerirAdmin();
+        CsrfService::verificarOAbortar();
+
         $nombre = trim($datos['nombre'] ?? '');
         $email = trim($datos['email'] ?? '');
 
@@ -40,7 +43,7 @@ class UsuarioController {
 
         try {
             UsuarioService::crear($datos);
-            $_SESSION["mensaje"] = "Cliente '$nombre' registrado con éxito.";
+            $_SESSION["toast"] = ['tipo' => 'success', 'mensaje' => "✓ Cliente '$nombre' registrado con éxito."];
             header("Location: /usuarios/todos/");
             exit();
         } catch (\PDOException $e) {
@@ -69,6 +72,8 @@ class UsuarioController {
 
     public static function procesarEditar(int $id, array $datos): void {
         AuthService::requerirAdmin();
+        CsrfService::verificarOAbortar();
+
         $nombre = trim($datos['nombre'] ?? '');
         $email = trim($datos['email'] ?? '');
 
@@ -80,7 +85,7 @@ class UsuarioController {
 
         try {
             UsuarioService::actualizar($id, $datos);
-            $_SESSION["mensaje"] = "Cliente #$id modificado correctamente.";
+            $_SESSION["toast"] = ['tipo' => 'success', 'mensaje' => "✓ Cliente #$id modificado correctamente."];
             header("Location: /usuarios/todos/");
             exit();
         } catch (\PDOException $e) {
@@ -97,9 +102,9 @@ class UsuarioController {
 
         if ($id > 0 && $id !== $currentUserId) {
             UsuarioService::eliminar($id);
-            $_SESSION["mensaje"] = "Cliente #$id eliminado del sistema.";
+            $_SESSION["toast"] = ['tipo' => 'info', 'mensaje' => "🗑️ Cliente #$id eliminado del sistema."];
         } else {
-            $_SESSION["error"] = "No puedes eliminar tu propia cuenta en uso.";
+            $_SESSION["toast"] = ['tipo' => 'error', 'mensaje' => "No puedes eliminar tu propia cuenta en uso."];
         }
 
         header("Location: /usuarios/todos/");

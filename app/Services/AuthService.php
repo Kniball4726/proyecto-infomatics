@@ -16,15 +16,32 @@ class AuthService {
         $db = Connection::get();
         $stmt = $db->prepare("
             SELECT * FROM TUsuarios 
-            WHERE (_email = ? OR _nombre = ?) AND _clave = ?
+            WHERE (_email = ? OR _nombre = ?)
             LIMIT 1
         ");
-        $stmt->execute([$usuarioOEmail, $usuarioOEmail, $clave]);
+        $stmt->execute([$usuarioOEmail, $usuarioOEmail]);
         $user = $stmt->fetch();
 
         if ($user) {
-            $_SESSION["usuario"] = $user;
-            return true;
+            $claveValida = false;
+            // 1. Validar hash bcrypt moderno
+            if (password_verify($clave, $user->_clave)) {
+                $claveValida = true;
+            }
+            // 2. Compatibilidad transparente con contraseñas heredadas en texto plano
+            elseif ($clave === $user->_clave) {
+                $claveValida = true;
+                // Auto-migrar la contraseña a hash seguro
+                $nuevoHash = password_hash($clave, PASSWORD_BCRYPT);
+                $stmtUpdate = $db->prepare("UPDATE TUsuarios SET _clave = ? WHERE _id = ?");
+                $stmtUpdate->execute([$nuevoHash, $user->_id]);
+                $user->_clave = $nuevoHash;
+            }
+
+            if ($claveValida) {
+                $_SESSION["usuario"] = $user;
+                return true;
+            }
         }
         return false;
     }

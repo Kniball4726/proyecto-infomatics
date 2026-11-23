@@ -31,6 +31,7 @@ class CarritoController {
 
         if ($idProducto > 0) {
             CarritoService::agregar($userId, $idProducto, $cantidad);
+            $_SESSION['toast'] = ['tipo' => 'success', 'mensaje' => '🛒 Producto agregado a tu carrito.'];
         }
 
         $referer = $_SERVER['HTTP_REFERER'] ?? '/';
@@ -47,6 +48,7 @@ class CarritoController {
 
         if ($idProducto > 0) {
             CarritoService::quitar($userId, $idProducto, $todo);
+            $_SESSION['toast'] = ['tipo' => 'info', 'mensaje' => $todo ? '🗑️ Producto quitado del carrito.' : 'Cantidad actualizada.'];
         }
 
         $referer = $_SERVER['HTTP_REFERER'] ?? '/carrito/todos';

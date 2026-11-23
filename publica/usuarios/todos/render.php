@@ -20,12 +20,12 @@ $esRolAdmin = ($cadaRegistro->_nivel > 1);
     </div>
 
     <nav style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-        <button onclick="location.href='/usuarios/editar/?id=<?= $cadaRegistro->_id ?>'" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+        <button type="button" class="btn btn-info" onclick="location.href='/usuarios/editar/?id=<?= $cadaRegistro->_id ?>'">
             ✏️ Modificar
         </button>
 
         <?php if (!$esEsteUsuario): ?>
-            <button onclick="if(confirm('¿Seguro que deseas eliminar al cliente <?= addslashes($cadaRegistro->_nombre . ' ' . $cadaRegistro->_apellido) ?>?')) location.href='/usuarios/borrar/procesar.php?id=<?= $cadaRegistro->_id ?>'" style="background-color: #b71c1c; color: #ffffff !important; border: 1px solid #7f0000; font-weight: bold; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+            <button type="button" class="btn btn-danger" onclick="if(confirm('¿Seguro que deseas eliminar al cliente <?= addslashes($cadaRegistro->_nombre . ' ' . $cadaRegistro->_apellido) ?>?')) location.href='/usuarios/borrar/procesar.php?id=<?= $cadaRegistro->_id ?>'">
                 🗑️ Eliminar
             </button>
         <?php else: ?>

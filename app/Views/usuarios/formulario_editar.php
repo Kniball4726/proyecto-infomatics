@@ -16,7 +16,7 @@
         <h1 style="margin: 0;">Modificar Cliente #<?= $cliente->_id ?></h1>
         <nav style="display: flex; gap: 10px; align-items: center;">
             <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-            <button onclick="location.href='/usuarios/todos/'">← Volver al listado</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/usuarios/todos/'">← Volver al listado</button>
         </nav>
     </header>
     <main>
@@ -25,6 +25,7 @@
         <?php endif; ?>
 
         <form action="/usuarios/editar/procesar.php" method="POST">
+            <?= \App\Services\CsrfService::campoHtml() ?>
             <input type="hidden" name="id" value="<?= $cliente->_id ?>">
 
             <article>
@@ -56,8 +57,8 @@
             </article>
 
             <article>
-                <button type="submit" style="background-color: #0277bd; color: #ffffff !important; font-weight: bold; padding: 10px 20px; cursor: pointer;">
-                    Guardar Cambios
+                <button type="submit" class="btn btn-info">
+                    ✓ Guardar Cambios
                 </button>
             </article>
         </form>

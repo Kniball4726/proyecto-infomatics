@@ -13,7 +13,7 @@ $admin = AuthService::esAdmin();
     
     <div class="nav-actions-pro">
         <!-- Botón Dark Mode -->
-        <button type="button" class="btn-toggle-theme" onclick="toggleTheme()" title="Cambiar tema">
+        <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()" title="Cambiar tema">
             🌙 Modo Oscuro
         </button>
 
@@ -29,27 +29,33 @@ $admin = AuthService::esAdmin();
             </span>
 
             <?php if ($admin): ?>
-                <button onclick="location.href='/productos/nuevo/';" style="background-color: #2e7d32; color: #ffffff !important; border: 1px solid #1b5e20; font-weight: bold; border-radius: 6px; padding: 7px 14px; cursor: pointer;">
+                <button type="button" class="btn btn-success" onclick="location.href='/productos/nuevo/';">
                     ➕ Nuevo Producto
                 </button>
-                <button onclick="location.href='/usuarios/todos/';" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; border-radius: 6px; padding: 7px 14px; cursor: pointer;">
+                <button type="button" class="btn btn-info" onclick="location.href='/usuarios/todos/';">
                     👥 Clientes
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='/pedidos/';" style="border-color: #666; color: #e0e0e0 !important;">
+                    📦 Pedidos
                 </button>
             <?php else: 
                 $userId = (int)($user->_id ?? $user->id ?? 0);
                 $resumen = CarritoService::obtenerResumen($userId);
             ?>
-                <button onclick="location.href='/carrito/todos';" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; border-radius: 6px; padding: 7px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <button type="button" class="btn btn-primary" onclick="location.href='/carrito/todos';" style="gap: 10px;">
                     <span>🛒 Carrito: <strong><?= $resumen->total_items ?></strong> <?= ($resumen->total_items == 1 ? 'ítem' : 'ítems') ?></span>
-                    <span style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800;">$ <?= number_format($resumen->total_precio, 2, ',', '.') ?></span>
+                    <span style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.88rem;">$ <?= number_format($resumen->total_precio, 2, ',', '.') ?></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='/pedidos/';" style="border-color: #666; color: #e0e0e0 !important;">
+                    📋 Mis Pedidos
                 </button>
             <?php endif; ?>
 
-            <button onclick="location.href='/formulario-logout.php'" style="background: transparent; border: 1px solid #777; color: #e0e0e0; font-weight: bold; border-radius: 6px; padding: 7px 12px; cursor: pointer;">
+            <button type="button" class="btn btn-secondary" onclick="location.href='/formulario-logout.php'" style="border-color: #666; color: #e0e0e0 !important;">
                 Cerrar sesión
             </button>
         <?php else: ?>
-            <button onclick="location.href='/formulario-login.php'" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; border-radius: 6px; padding: 7px 16px; cursor: pointer;">
+            <button type="button" class="btn btn-primary" onclick="location.href='/formulario-login.php'">
                 🔑 Iniciar sesión
             </button>
         <?php endif; ?>

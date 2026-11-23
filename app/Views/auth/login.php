@@ -184,8 +184,8 @@
             <span>InfoMatics</span>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-            <button onclick="location.href='/'" style="background: transparent; border: 1px solid #777; color: #e0e0e0; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/'" style="border-color: #666; color: #e0e0e0 !important;">
                 ← Volver a la tienda
             </button>
         </div>
@@ -204,6 +204,7 @@
             <?php endif; ?>
 
             <form action="/formulario-login-procesar.php" method="POST">
+                <?= \App\Services\CsrfService::campoHtml() ?>
                 <div class="form-group">
                     <label for="idUsername">Email o Nombre de usuario:</label>
                     <input type="text" class="form-control" name="nmUsername" id="idUsername" placeholder="ejemplo@correo.com" required autofocus>
@@ -214,10 +215,14 @@
                     <input type="password" class="form-control" name="nmPassword" id="idPassword" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-submit">
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 42px; min-height: 42px; font-size: 0.95rem; margin-top: 0.8rem;">
                     Entrar a InfoMatics
                 </button>
             </form>
+
+            <div style="margin-top: 1.2rem; font-size: 0.9rem;">
+                ¿Aún no tienes cuenta? <a href="/registro.php" style="color: #d32f2f; font-weight: bold; text-decoration: none;">Crear una cuenta</a>
+            </div>
 
             <div class="login-footer-links">
                 <a href="/">← Volver al catálogo</a>

@@ -29,12 +29,12 @@ $currentUserId = (int)($currentUser->_id ?? $currentUser->id ?? 0);
 <body>
     <div class="barra-superior">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="location.href='/';" style="background: transparent; border: 1px solid #777; color: #444; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            <button type="button" class="btn btn-secondary" onclick="location.href='/';">
                 ← Volver a la tienda
             </button>
-            <button type="button" class="btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+            <button type="button" class="btn btn-toggle-theme" onclick="toggleTheme()">🌙 Modo Oscuro</button>
         </div>
-        <button onclick="location.href='/usuarios/nuevo/';" style="background-color: #2e7d32; color: #ffffff !important; border: 1px solid #1b5e20; font-weight: bold; border-radius: 6px; padding: 7px 16px; cursor: pointer;">
+        <button type="button" class="btn btn-success" onclick="location.href='/usuarios/nuevo/';">
             ➕ Registrar Nuevo Cliente
         </button>
     </div>
@@ -83,12 +83,12 @@ $currentUserId = (int)($currentUser->_id ?? $currentUser->id ?? 0);
                     </div>
 
                     <nav style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <button onclick="location.href='/usuarios/editar/?id=<?= $userId ?>'" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+                        <button type="button" class="btn btn-info" onclick="location.href='/usuarios/editar/?id=<?= $userId ?>'">
                             ✏️ Modificar
                         </button>
 
                         <?php if (!$esEsteUsuario): ?>
-                            <button onclick="if(confirm('¿Seguro que deseas eliminar al cliente <?= addslashes($nombreCompleto) ?>?')) location.href='/usuarios/borrar/procesar.php?id=<?= $userId ?>'" style="background-color: #b71c1c; color: #ffffff !important; border: 1px solid #7f0000; font-weight: bold; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+                            <button type="button" class="btn btn-danger" onclick="if(confirm('¿Seguro que deseas eliminar al cliente <?= addslashes($nombreCompleto) ?>?')) location.href='/usuarios/borrar/procesar.php?id=<?= $userId ?>'">
                                 🗑️ Eliminar
                             </button>
                         <?php else: ?>

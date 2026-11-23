@@ -9,19 +9,21 @@ $cliente = esCliente();
         Precio: $ <?= number_format($cadaRegistro->_precio, 2, ',', '.') ?>
     </p>
     <nav style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
-        <button onclick="location.href='/productos/ver?id=<?= $cadaRegistro->_id ?>'">Más info</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/productos/ver?id=<?= $cadaRegistro->_id ?>'">
+            ℹ️ Más info
+        </button>
         
         <?php if ($cliente): ?>
-            <button onclick="location.href='/carrito/agregar/?id=<?= $cadaRegistro->_id ?>'" style="background-color: #d32f2f; color: #ffffff !important; border: 1px solid #b71c1c; font-weight: bold; cursor: pointer;">
+            <button type="button" class="btn btn-primary" onclick="location.href='/carrito/agregar/?id=<?= $cadaRegistro->_id ?>'">
                 🛒 Agregar al carrito
             </button>
         <?php endif; ?>
 
         <?php if ($admin): ?>
-            <button onclick="location.href='/productos/editar/?id=<?= $cadaRegistro->_id ?>'" style="background-color: #0277bd; color: #ffffff !important; border: 1px solid #01579b; font-weight: bold; cursor: pointer;">
-                ✏️ Modifica
+            <button type="button" class="btn btn-info" onclick="location.href='/productos/editar/?id=<?= $cadaRegistro->_id ?>'">
+                ✏️ Modificar
             </button>
-            <button onclick="if(confirm('¿Seguro que deseas eliminar <?= addslashes($cadaRegistro->_nombre) ?>?')) location.href='/productos/borrar/procesar.php?id=<?= $cadaRegistro->_id ?>'" style="background-color: #b71c1c; color: #ffffff !important; border: 1px solid #7f0000; font-weight: bold; cursor: pointer;">
+            <button type="button" class="btn btn-danger" onclick="if(confirm('¿Seguro que deseas eliminar <?= addslashes($cadaRegistro->_nombre) ?>?')) location.href='/productos/borrar/procesar.php?id=<?= $cadaRegistro->_id ?>'">
                 🗑️ Eliminar
             </button>
         <?php endif; ?>
